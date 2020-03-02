@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "ashpb_gendiff"
+version = "0.1.0"
+description = "Hexlet Python study project 2 (Gendiff)"
+authors = ["Pavel Borisov <ashpb@me.com>"]
+packages = [
+	{ include = "gendiff" },
+]
+repository = "https://github.com/ashpb/python-project-lvl2"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.7.9"
+
+[tool.poetry.scripts]
+gendiff = "gendiff.scripts.gendiff:main"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
