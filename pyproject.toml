@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ashpb_gendiff"
-version = "0.1.1"
+version = "0.1.2"
 description = "Hexlet Python study project 2 (Gendiff)"
 authors = ["Pavel Borisov <ashpb@me.com>"]
 packages = [
