@@ -13,3 +13,6 @@ You can install the package from TestPyPI:
 pip3 install -i https://test.pypi.org/simple/ ashpb-gendiff
 ```
 
+## Usage
+
+[![asciicast](https://asciinema.org/a/2BXucGp1eFdoyMHwIFHLnD9tr.svg)](https://asciinema.org/a/2BXucGp1eFdoyMHwIFHLnD9tr)
