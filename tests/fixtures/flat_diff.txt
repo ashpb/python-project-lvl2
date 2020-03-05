@@ -1,0 +1,10 @@
+{
+    host: hexlet.io
+    method: get
+  + payload: null
+  + verbose: true
+  - comment: this is a test
+  - proxy: 123.234.53.22
+  - timeout: 50
+  + timeout: 20
+}
