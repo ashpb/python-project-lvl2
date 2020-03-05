@@ -5,3 +5,4 @@ dist/
 *.pyc
 .vscode/
 .pytest_cache/
+.coverage
