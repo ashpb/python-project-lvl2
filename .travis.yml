@@ -17,4 +17,5 @@ script:
         - make testcov
 
 after_script:
+        - make testcov_report
         - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
