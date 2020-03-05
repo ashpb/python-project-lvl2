@@ -35,24 +35,32 @@ def generate_diff(path1, path2):
             changed_keys.add(k)
         else:
             unchanged_keys.add(k)
-    additions = [
-        "  + {key}: {value}".format(key=k, value=data2.get(k))
-        for k in added_keys
-    ]
-    removals = [
-        "  - {key}: {value}".format(key=k, value=data1.get(k))
-        for k in removed_keys
-    ]
-    changes = [
-        "  - {key}: {old_value}\n  + {key}: {new_value}".format(
-            key=k, old_value=data1.get(k), new_value=data2.get(k)
-        )
-        for k in changed_keys
-    ]
-    unchanged = [
-        "    {key}: {value}".format(key=k, value=data1.get(k))
-        for k in unchanged_keys
-    ]
+    additions = sorted(
+        [
+            "  + {key}: {value}".format(key=k, value=data2.get(k))
+            for k in added_keys
+        ]
+    )
+    removals = sorted(
+        [
+            "  - {key}: {value}".format(key=k, value=data1.get(k))
+            for k in removed_keys
+        ]
+    )
+    changes = sorted(
+        [
+            "  - {key}: {old_value}\n  + {key}: {new_value}".format(
+                key=k, old_value=data1.get(k), new_value=data2.get(k)
+            )
+            for k in changed_keys
+        ]
+    )
+    unchanged = sorted(
+        [
+            "    {key}: {value}".format(key=k, value=data1.get(k))
+            for k in unchanged_keys
+        ]
+    )
     diff = "{{\n{}\n{}\n{}\n{}\n}}".format(
         "\n".join(unchanged),
         "\n".join(additions),
