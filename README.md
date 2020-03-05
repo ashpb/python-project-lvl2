@@ -1,6 +1,6 @@
 # Hexlet Python study project 2 (Gendiff)
 
-[![Build Status](https://travis-ci.org/ashpb/python-project-lvl2.svg?branch=master)](https://travis-ci.org/ashpb/python-project-lvl2) 
+[![Build Status](https://travis-ci.org/ashpb/python-project-lvl2.svg?branch=master)](https://travis-ci.org/ashpb/python-project-lvl2) [![Maintainability](https://api.codeclimate.com/v1/badges/b3b445c67b15827d2437/maintainability)](https://codeclimate.com/github/ashpb/python-project-lvl2/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/b3b445c67b15827d2437/test_coverage)](https://codeclimate.com/github/ashpb/python-project-lvl2/test_coverage)
 
 ## About
 
