@@ -1,20 +1,7 @@
 from gendiff.io import load_file_contents, jsonify
 
 
-# def custom_json_decoder(obj):
-#     """
-#     Prevents conversion of 'true', 'false', 'null' and other non-string
-#     values to their Python equivalents.
-#     """
-#     return {
-#         k: json.JSONEncoder().encode(v) if type(v) is not str else v
-#         for k, v in obj.items()
-#     }
-
-
 def generate_diff_data(data1, data2):
-    # data1 = json.load(open(path1), object_hook=custom_json_decoder)
-    # data2 = json.load(open(path2), object_hook=custom_json_decoder)
     data1_keys = set(data1.keys())
     data2_keys = set(data2.keys())
     all_keys = data1_keys.union(data2_keys)

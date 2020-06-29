@@ -2,17 +2,6 @@ import json
 import yaml
 
 
-# def custom_json_decoder(obj):
-#     """
-#     Prevents conversion of 'true', 'false', 'null' and other non-string
-#     values to their Python equivalents.
-#     """
-#     return {
-#         k: json.JSONEncoder().encode(v) if type(v) is not str else v
-#         for k, v in obj.items()
-#     }
-
-
 def load_json(source):
     return json.load(source)
 
