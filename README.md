@@ -10,7 +10,7 @@ This is a CLI tool that shows differences between two configuration files.
 
 You can install the package from TestPyPI:
 ```
-pip3 install -i https://test.pypi.org/simple/ ashpb-gendiff
+pip3 install --extra-index-url https://test.pypi.org/simple/ ashpb-gendiff
 ```
 
 ## Usage
@@ -19,4 +19,5 @@ pip3 install -i https://test.pypi.org/simple/ ashpb-gendiff
 [![asciicast](https://asciinema.org/a/2BXucGp1eFdoyMHwIFHLnD9tr.svg)](https://asciinema.org/a/2BXucGp1eFdoyMHwIFHLnD9tr)
 
 
-<!-- **Comparing YAML files:** -->
+**Comparing YAML files:**
+[![asciicast](https://asciinema.org/a/hikoWxkT2WKZtRX3HpJLVnhyi.svg)](https://asciinema.org/a/hikoWxkT2WKZtRX3HpJLVnhyi)
