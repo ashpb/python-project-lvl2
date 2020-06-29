@@ -1,20 +1,20 @@
-import json
+from gendiff.io import load_file_contents, jsonify
 
 
-def custom_json_decoder(obj):
-    """
-    Prevents conversion of 'true', 'false', 'null' and other non-string
-    values to their Python equivalents.
-    """
-    return {
-        k: json.JSONEncoder().encode(v) if type(v) is not str else v
-        for k, v in obj.items()
-    }
+# def custom_json_decoder(obj):
+#     """
+#     Prevents conversion of 'true', 'false', 'null' and other non-string
+#     values to their Python equivalents.
+#     """
+#     return {
+#         k: json.JSONEncoder().encode(v) if type(v) is not str else v
+#         for k, v in obj.items()
+#     }
 
 
-def generate_diff(path1, path2):
-    data1 = json.load(open(path1), object_hook=custom_json_decoder)
-    data2 = json.load(open(path2), object_hook=custom_json_decoder)
+def generate_diff_data(data1, data2):
+    # data1 = json.load(open(path1), object_hook=custom_json_decoder)
+    # data2 = json.load(open(path2), object_hook=custom_json_decoder)
     data1_keys = set(data1.keys())
     data2_keys = set(data2.keys())
     all_keys = data1_keys.union(data2_keys)
@@ -35,30 +35,42 @@ def generate_diff(path1, path2):
             changed_keys.add(k)
         else:
             unchanged_keys.add(k)
+    diff_data = dict()
+    diff_data["additions"] = {key: data2.get(key) for key in added_keys}
+    diff_data["removals"] = {key: data1.get(key) for key in removed_keys}
+    diff_data["changes"] = {
+        key: {"old": data1.get(key), "new": data2.get(key)}
+        for key in changed_keys
+    }
+    diff_data["unchanged"] = {key: data1.get(key) for key in unchanged_keys}
+    return diff_data
+
+
+def output_diff(diff_data):
     additions = sorted(
         [
-            "  + {key}: {value}".format(key=k, value=data2.get(k))
-            for k in added_keys
+            "  + {key}: {value}".format(key=k, value=jsonify(v))
+            for k, v in diff_data["additions"].items()
         ]
     )
     removals = sorted(
         [
-            "  - {key}: {value}".format(key=k, value=data1.get(k))
-            for k in removed_keys
+            "  - {key}: {value}".format(key=k, value=jsonify(v))
+            for k, v in diff_data["removals"].items()
         ]
     )
     changes = sorted(
         [
             "  - {key}: {old_value}\n  + {key}: {new_value}".format(
-                key=k, old_value=data1.get(k), new_value=data2.get(k)
+                key=k, old_value=jsonify(v["old"]), new_value=jsonify(v["new"])
             )
-            for k in changed_keys
+            for k, v in diff_data["changes"].items()
         ]
     )
     unchanged = sorted(
         [
-            "    {key}: {value}".format(key=k, value=data1.get(k))
-            for k in unchanged_keys
+            "    {key}: {value}".format(key=k, value=jsonify(v))
+            for k, v in diff_data["unchanged"].items()
         ]
     )
     diff = "{{\n{}\n{}\n{}\n{}\n}}".format(
@@ -68,3 +80,11 @@ def generate_diff(path1, path2):
         "\n".join(changes),
     )
     return diff
+
+
+def generate_diff(file1, file2):
+    return output_diff(
+        generate_diff_data(
+            load_file_contents(file1), load_file_contents(file2)
+        )
+    )
