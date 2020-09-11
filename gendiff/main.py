@@ -2,23 +2,15 @@ from gendiff.io import load_file_contents, jsonify
 
 
 def generate_diff_data(data1, data2):
-    data1_keys = set(data1.keys())
-    data2_keys = set(data2.keys())
-    all_keys = data1_keys.union(data2_keys)
+    data1_keys = data1.keys()
+    data2_keys = data2.keys()
+    common_keys = data1_keys & data2_keys
     unchanged_keys = set()
-    added_keys = set()
-    removed_keys = set()
+    added_keys = data2_keys - data1_keys
+    removed_keys = data1_keys - data2_keys
     changed_keys = set()
-    for k in all_keys:
-        if (k not in data1_keys) and (k in data2_keys):
-            added_keys.add(k)
-        elif (k in data1_keys) and (k not in data2_keys):
-            removed_keys.add(k)
-        elif (
-            (k in data1_keys)
-            and (k in data2_keys)
-            and (data1.get(k) != data2.get(k))
-        ):
+    for k in common_keys:
+        if (data1.get(k) != data2.get(k)):
             changed_keys.add(k)
         else:
             unchanged_keys.add(k)
