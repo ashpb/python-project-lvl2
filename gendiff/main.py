@@ -1,68 +1,94 @@
 from gendiff.io import load_file_contents, jsonify
+from collections import namedtuple
 
 
 def generate_diff_data(data1, data2):
-    data1_keys = data1.keys()
-    data2_keys = data2.keys()
-    common_keys = data1_keys & data2_keys
-    unchanged_keys = set()
-    added_keys = data2_keys - data1_keys
-    removed_keys = data1_keys - data2_keys
-    changed_keys = set()
-    for k in common_keys:
-        if (data1.get(k) != data2.get(k)):
-            changed_keys.add(k)
-        else:
-            unchanged_keys.add(k)
+    DiffKey = namedtuple("DiffKey", ["status", "name"])
+    common_keys = data1.keys() & data2.keys()
+    added_keys = data2.keys() - data1.keys()
+    removed_keys = data1.keys() - data2.keys()
     diff_data = dict()
-    diff_data["additions"] = {key: data2.get(key) for key in added_keys}
-    diff_data["removals"] = {key: data1.get(key) for key in removed_keys}
-    diff_data["changes"] = {
-        key: {"old": data1.get(key), "new": data2.get(key)}
-        for key in changed_keys
-    }
-    diff_data["unchanged"] = {key: data1.get(key) for key in unchanged_keys}
+    for k in common_keys:
+        if data1[k] == data2[k]:
+            diff_data[DiffKey(status="unchanged", name=k)] = data1[k]
+        elif data1[k] != data2[k]:
+            if isinstance(data1[k], dict) and isinstance(data2[k], dict):
+                diff_data[
+                    DiffKey(status="unchanged", name=k)
+                ] = generate_diff_data(data1[k], data2[k])
+            else:
+                diff_data[DiffKey(status="changed", name=k)] = {
+                    "old": data1[k],
+                    "new": data2[k],
+                }
+    for k in removed_keys:
+        diff_data[DiffKey(status="removed", name=k)] = data1[k]
+    for k in added_keys:
+        diff_data[DiffKey(status="added", name=k)] = data2[k]
     return diff_data
 
 
-def output_diff(diff_data):
-    additions = sorted(
-        [
-            "  + {key}: {value}".format(key=k, value=jsonify(v))
-            for k, v in diff_data["additions"].items()
-        ]
-    )
-    removals = sorted(
-        [
-            "  - {key}: {value}".format(key=k, value=jsonify(v))
-            for k, v in diff_data["removals"].items()
-        ]
-    )
-    changes = sorted(
-        [
-            "  - {key}: {old_value}\n  + {key}: {new_value}".format(
-                key=k, old_value=jsonify(v["old"]), new_value=jsonify(v["new"])
+def _render_value(value, indent_level=0):
+    padding = "    " * indent_level
+    if isinstance(value, dict):
+        items = sorted(
+            [
+                "{0}        {1}: {2}".format(
+                    padding, k, _render_value(v, indent_level=indent_level + 1)
+                )
+                for k, v in value.items()
+            ]
+        )
+        return "{{\n{0}\n{1}    }}".format("\n".join(items), padding)
+    else:
+        return jsonify(value)
+
+
+def render_diff(diff_data, indent_level=0):
+    padding = "    " * indent_level
+    readable_diff = "{\n"
+    for k in sorted(diff_data.keys(), key=lambda k: k.name):
+        if isinstance(diff_data[k], dict) and k.status == "unchanged":
+            readable_diff += "{0}    {1}: {2}\n".format(
+                padding,
+                k.name,
+                render_diff(diff_data[k], indent_level=indent_level + 1),
             )
-            for k, v in diff_data["changes"].items()
-        ]
-    )
-    unchanged = sorted(
-        [
-            "    {key}: {value}".format(key=k, value=jsonify(v))
-            for k, v in diff_data["unchanged"].items()
-        ]
-    )
-    diff = "{{\n{}\n{}\n{}\n{}\n}}".format(
-        "\n".join(unchanged),
-        "\n".join(additions),
-        "\n".join(removals),
-        "\n".join(changes),
-    )
-    return diff
+        elif k.status == "changed":
+            readable_diff += "{0}  - {1}: {2}\n".format(
+                padding,
+                k.name,
+                _render_value(diff_data[k]["old"], indent_level=indent_level),
+            )
+            readable_diff += "{0}  + {1}: {2}\n".format(
+                padding,
+                k.name,
+                _render_value(diff_data[k]["new"], indent_level=indent_level),
+            )
+        elif k.status == "added":
+            readable_diff += "{0}  + {1}: {2}\n".format(
+                padding,
+                k.name,
+                _render_value(diff_data[k], indent_level=indent_level),
+            )
+        elif k.status == "removed":
+            readable_diff += "{0}  - {1}: {2}\n".format(
+                padding,
+                k.name,
+                _render_value(diff_data[k], indent_level=indent_level),
+            )
+        else:
+            readable_diff += "{0}    {1}: {2}\n".format(
+                padding,
+                k.name,
+                _render_value(diff_data[k], indent_level=indent_level),
+            )
+    readable_diff += "{0}}}".format(padding)
+    return readable_diff
 
 
 def generate_diff(file1, file2):
-    return output_diff(
+    return render_diff(
         generate_diff_data(
             load_file_contents(file1), load_file_contents(file2)
         )
