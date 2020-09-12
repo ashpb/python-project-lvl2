@@ -2,12 +2,12 @@ import json
 import yaml
 
 
-def load_json(source):
-    return json.load(source)
+def load_json(file):
+    return json.load(file)
 
 
-def load_yaml(source):
-    return yaml.load(source, Loader=yaml.CLoader)
+def load_yaml(file):
+    return yaml.load(file, Loader=yaml.CLoader)
 
 
 def determine_file_format(path):

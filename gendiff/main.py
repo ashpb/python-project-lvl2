@@ -3,6 +3,10 @@ from collections import namedtuple
 
 
 def generate_diff_data(data1, data2):
+    """
+    Generates internal representation of difference
+    between two data structures
+    """
     DiffKey = namedtuple("DiffKey", ["status", "name"])
     common_keys = data1.keys() & data2.keys()
     added_keys = data2.keys() - data1.keys()
@@ -29,6 +33,11 @@ def generate_diff_data(data1, data2):
 
 
 def _render_value(value, indent_level=0):
+    """
+    Recursively renders string representation of a dict value
+    (the value might itself be a dict). This is a helper function
+    used by 'render_diff' function.
+    """
     padding = "    " * indent_level
     if isinstance(value, dict):
         items = sorted(
@@ -45,6 +54,11 @@ def _render_value(value, indent_level=0):
 
 
 def render_diff(diff_data, indent_level=0):
+    """
+    Recursively renders string representation of difference
+    between two data structures. The diffenence data is expected to be
+    in the format provided by 'generate_diff_data' function.
+    """
     padding = "    " * indent_level
     readable_diff = "{\n"
     for k in sorted(diff_data.keys(), key=lambda k: k.name):
@@ -87,9 +101,13 @@ def render_diff(diff_data, indent_level=0):
     return readable_diff
 
 
-def generate_diff(file1, file2):
+def generate_diff(file1_path, file2_path):
+    """
+    Generates human-readable diff between two files.
+    JSON and YAML files are supported at the moment.
+    """
     return render_diff(
         generate_diff_data(
-            load_file_contents(file1), load_file_contents(file2)
+            load_file_contents(file1_path), load_file_contents(file2_path)
         )
     )
